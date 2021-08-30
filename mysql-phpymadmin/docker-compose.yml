@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  mysql_db:
+    image: mysql:latest
+    container_name: mysql_db
+    volumes:
+      - mysql_db_data:/var/lib/mysql
+    # สั่งให้ retry จนกว่า container จะได้รันได้ตามปกติ เพราะบางทีอยู่ๆ container ก็ดับไปเลย
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+    # จัดกลุ่มของ network ของ container
+    networks:
+      - dev_network
+
+  phpmyadmin:
+    depends_on:
+      - mysql_db
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: mysql_db
+      MYSQL_ROOT_PASSWORD: 1234
+    networks:
+      - dev_network
+
+networks:
+  dev_network:
+
+volumes:
+  mysql_db_data:
